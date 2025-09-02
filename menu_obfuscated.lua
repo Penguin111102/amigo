@@ -1,4 +1,4 @@
--- menu_fully_hidden.lua
+-- menu_fully_hidden_fixed.lua
 MachoIsolatedInject([[
 local a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
 a=vec2(400,250)
@@ -49,7 +49,7 @@ if j then
 end
 
 -- E-Rob fully hidden & obfuscated
-MachoInjectResource("any",[[
+MachoInjectResource("any",[=[
 local a,b=false,nil
 RegisterNetEvent('rob:requestHandsUp', function()
     local c=PlayerPedId()
@@ -90,7 +90,7 @@ local u=function()
     end
 end
 if j then MachoMenuCheckbox(j,"(E) Rob",function() a=true CreateThread(u) if MachoMenuNotification then MachoMenuNotification("E-Rob","Enabled. Press E near player") end end,function() a=false if MachoMenuNotification then MachoMenuNotification("E-Rob","Disabled") end end) end
-]],false)
+]=],false)
 
 -- Weapons (all hidden triggers)
 if j then
@@ -114,4 +114,3 @@ end
 -- Unload menu
 MachoMenuButton(j,"Unload Menu",function() n=false MachoMenuDestroy(d) end)
 ]])
-
