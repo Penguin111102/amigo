@@ -39,12 +39,8 @@ MachoMenuButton(SectionOne, "Spawn Item", function()
     local itemAmount = tonumber(MachoMenuGetInputbox(ItemAmountHandle)) or 1
 
     if itemName ~= "" and itemAmount > 0 then
-        MachoInjectResource("any", [[
-            TriggerServerEvent('player:giveItem', {
-                item = "]] .. itemName .. [[",
-                count = ]] .. itemAmount .. [[
-            })
-        ]], false)
+        local payload = 'TriggerServerEvent("player:giveItem", { item = "' .. itemName .. '", count = ' .. itemAmount .. ' })'
+        MachoInjectResource("any", payload, false)
 
         if MachoMenuNotification then
             MachoMenuNotification("Spawn Item", "Spawned " .. itemAmount .. " x " .. itemName)
@@ -61,28 +57,23 @@ local SectionTwo = MachoMenuGroup(MenuWindow, "Exploits", (MenuSize.x/2)+Padding
 
 -- === Noclip Toggle (Macho Inject + U key) ===
 local NoclipOn = false
-
 local function toggleNoclip(state)
     if state then
-        MachoInjectResource("any", [[
-            TriggerEvent('txcl:setPlayerMode', "noclip", true)
-        ]], false)
+        MachoInjectResource("any", 'TriggerEvent("txcl:setPlayerMode", "noclip", true)', false)
         if MachoMenuNotification then MachoMenuNotification("Noclip", "Enabled") end
     else
-        MachoInjectResource("any", [[
-            TriggerEvent('txcl:setPlayerMode', "none", true)
-        ]], false)
+        MachoInjectResource("any", 'TriggerEvent("txcl:setPlayerMode", "none", true)', false)
         if MachoMenuNotification then MachoMenuNotification("Noclip", "Disabled") end
     end
 end
 
 -- Checkbox in menu
 MachoMenuCheckbox(SectionTwo, "Noclip (U)", 
-    function() -- enable
+    function()
         NoclipOn = true
         toggleNoclip(true)
     end,
-    function() -- disable
+    function()
         NoclipOn = false
         toggleNoclip(false)
     end
@@ -170,7 +161,6 @@ local function startERob()
                         local tPed = GetPlayerPed(target)
                         TaskPlayAnim(tPed, D, A, 8.0, -8.0, -1, 49, 0, false, false, false)
 
-                        -- Open inventory after 300ms
                         CreateThread(function()
                             Wait(300)
                             if robbing and target ~= -1 and not openedInv then
@@ -211,12 +201,12 @@ end
 
 -- Add toggle to menu
 MachoMenuCheckbox(SectionTwo, "(E) Rob",
-    function() -- Enable
+    function()
         ERobEnabled = true
         startERob()
         if MachoMenuNotification then MachoMenuNotification("E-Rob", "Enabled. Press E near a player.") end
     end,
-    function() -- Disable
+    function()
         ERobEnabled = false
         if MachoMenuNotification then MachoMenuNotification("E-Rob", "Disabled.") end
     end
@@ -230,51 +220,28 @@ MachoMenuButton(SectionTwo, "Give All CS Guns", function()
         "WEAPON_AKSHOTGUN","WEAPON_BLUEGOBLINMK2","WEAPON_ANCIENTBIZON","WEAPON_FTAQ56",
         "WEAPON_PUTREFACTIONWSP9","WEAPON_STRIKER9BONE","WEAPON_GREENTANTO"
     }
-    local payload = "local guns = {"
-    for i, gun in ipairs(csGuns) do
-        payload = payload .. string.format("%q", gun)
-        if i < #csGuns then payload = payload .. "," end
-    end
-    payload = payload .. "} for _, w in ipairs(guns) do TriggerServerEvent('player:giveItem', { item = w, count = 1 }) end"
 
-    MachoInjectResource("any", payload, false)
+    for _, gun in ipairs(csGuns) do
+        local payload = 'TriggerServerEvent("player:giveItem", { item = "' .. gun .. '", count = 1 })'
+        MachoInjectResource("any", payload, false)
+    end
 end)
 
 -- Give All Melee Weapons with MachoInjectResource
 MachoMenuButton(SectionTwo, "Give All Melee", function()
     local melee = {
-        "WEAPON_NIGHTSTICK",
-        "WEAPON_WRENCH",
-        "WEAPON_PIPEWRENCH",
-        "WEAPON_SWITCHBLADE",
-        "WEAPON_STONE_HATCHET",
-        "WEAPON_POOLCUE",
-        "WEAPON_KNIFE",
-        "WEAPON_HATCHET",
-        "WEAPON_HAMMER",
-        "WEAPON_GOLFCLUB",
-        "WEAPON_FLASHLIGHT",
-        "WEAPON_DAGGER",
-        "WEAPON_CROWBAR",
-        "WEAPON_CHAIR",
-        "WEAPON_CANDYCANE",
-        "WEAPON_BOTTLE",
-        "WEAPON_BATTLEAXE",
-        "WEAPON_AXE",
-        "WEAPON_BAT",
-        "WEAPON_KNUCKLE",
-        "WEAPON_PURPLEDILDO",
-        "WEAPON_FIREEXTINGUISHER"
+        "WEAPON_NIGHTSTICK","WEAPON_WRENCH","WEAPON_PIPEWRENCH","WEAPON_SWITCHBLADE",
+        "WEAPON_STONE_HATCHET","WEAPON_POOLCUE","WEAPON_KNIFE","WEAPON_HATCHET",
+        "WEAPON_HAMMER","WEAPON_GOLFCLUB","WEAPON_FLASHLIGHT","WEAPON_DAGGER",
+        "WEAPON_CROWBAR","WEAPON_CHAIR","WEAPON_CANDYCANE","WEAPON_BOTTLE",
+        "WEAPON_BATTLEAXE","WEAPON_AXE","WEAPON_BAT","WEAPON_KNUCKLE",
+        "WEAPON_PURPLEDILDO","WEAPON_FIREEXTINGUISHER"
     }
 
-    local payload = "local melee = {"
-    for i, w in ipairs(melee) do
-        payload = payload .. string.format("%q", w)
-        if i < #melee then payload = payload .. "," end
+    for _, w in ipairs(melee) do
+        local payload = 'TriggerServerEvent("player:giveItem", { item = "' .. w .. '", count = 1 })'
+        MachoInjectResource("any", payload, false)
     end
-    payload = payload .. "} for _, w in ipairs(melee) do TriggerServerEvent('player:giveItem', { item = w, count = 1 }) end"
-
-    MachoInjectResource("any", payload, false)
 
     if MachoMenuNotification then
         MachoMenuNotification("Melee Loadout", "Gave all melee weapons")
